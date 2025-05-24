@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แนวโน้มการลงทุน (มิ.ย.-ต.ค. 2568)</title>
+    <style>
+        body {
+            font-family: 'Tahoma', 'Sarabun', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Lighter gray */
+            color: #343a40; /* Darker text */
+        }
+        .container {
+            width: 85%;
+            max-width: 1000px;
+            margin: 20px auto;
+            overflow: hidden;
+            padding: 25px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        header {
+            background: linear-gradient(135deg, #0056b3, #007bff); /* Gradient blue */
+            color: #fff;
+            padding: 25px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 35px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #007bff;
+            margin-top: 25px;
+            font-size: 1.5em;
+        }
+        h4 {
+            color: #495057; /* Medium gray */
+            font-style: italic;
+            font-size: 1.2em;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+        }
+        li::before {
+            content: "🔹"; /* Bullet point icon */
+            color: #007bff;
+            position: absolute;
+            left: 0;
+            font-size: 1.2em;
+        }
+        .disclaimer {
+            margin-top: 35px;
+            padding: 18px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            text-align: center;
+            font-size: 0.95em;
+            border-radius: 5px;
+        }
+        .highlight-text { /* For general text highlighting */
+            background-color: #e9ecef;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        strong {
+            color: #004085;
+        }
+
+        /* Key Highlights Section (Infographic-like) */
+        .key-highlights {
+            background-color: #e6f7ff; /* Light cyan-blue */
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #007bff;
+        }
+        .key-highlights h2 {
+            color: #0056b3;
+            border-bottom: none;
+            margin-top: 0;
+            font-size: 1.6em;
+            text-align: center;
+        }
+        .highlight-box {
+            background-color: #ffffff;
+            border: 1px solid #bce0fd;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 1.05em;
+        }
+        .highlight-box strong {
+            color: #0056b3;
+        }
+        .highlight-box .icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        /* Portfolio Allocation Section (Infographic-like Cards) */
+        .portfolio-section {
+            margin-top: 30px;
+            background-color: #f0f8ff; /* AliceBlue */
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .portfolio-section h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: none;
+        }
+        .dalio-note {
+            text-align: center;
+            font-style: italic;
+            color: #5a6268; /* Gray */
+            margin-bottom: 20px;
+        }
+        .allocation-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-around;
+        }
+        .allocation-card {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-top: 5px solid; /* Colored top border */
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            min-width: 280px; /* Ensure cards don't get too narrow */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+        }
+        .allocation-card.long-term { border-top-color: #28a745; /* Green */ }
+        .allocation-card.short-term { border-top-color: #fd7e14; /* Orange */ }
+
+        .allocation-card h3 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.4em;
+        }
+        .allocation-card.long-term h3 { color: #28a745; }
+        .allocation-card.short-term h3 { color: #fd7e14; }
+
+        .allocation-card ul {
+            padding-left: 0;
+        }
+        .allocation-card li {
+            padding-left: 30px; /* Space for icon */
+            font-size: 1em;
+        }
+        .allocation-card li::before {
+            content: ""; /* Remove default bullet for these lists */
+        }
+        .allocation-card .item-icon {
+            position: absolute;
+            left: 0;
+            font-size: 1.3em;
+            width: 25px; /* Ensure alignment */
+            text-align: center;
+        }
+         /* Specific item styling for clarity */
+        .stock-item strong { color: #003d80; }
+        .asset-target { background-color: #fff3cd; padding: 2px 5px; border-radius: 3px; color: #856404; font-weight: bold;}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>แนวโน้มการลงทุน</h1>
+        <p style="font-size: 1.1em; margin-top:5px;">(มิถุนายน-ตุลาคม 2568)</p>
+    </header>
+    <div class="container">
+
+        <div class="key-highlights">
+            <h2>💡 สรุปไฮไลท์สำหรับนักลงทุน</h2>
+            <div class="highlight-box">
+                <span class="icon">🎯</span><strong>เป้าหมาย:</strong> นักลงทุนไทยพอร์ต 20-50 ล้านบาท | ช่วงเวลา: มิ.ย. - ต.ค. 2568
+            </div>
+            <div class="highlight-box">
+                <span class="icon">🌍</span><strong>กรอบคิด:</strong> Ray Dalio "Modern Mercantilism" | รับความเสี่ยงสูง ปรับพอร์ตรับระเบียบโลกใหม่
+            </div>
+            <div class="highlight-box">
+                <span class="icon">📈</span><strong>ตลาดเด่น:</strong> หุ้นเทคฯ/AI สหรัฐฯ (<span class="highlight-text">PLTR, TSM</span>), เอเชีย (<span class="highlight-text">JD.com, BYD, VNM ETF</span>), หุ้นกลาโหม (<span class="highlight-text">LMT</span>)
+            </div>
+            <div class="highlight-box">
+                <span class="icon">💰</span><strong>สินทรัพย์แนะนำ:</strong> ทองคำ , Crypto (จำกัด <span class="highlight-text">5-10%</span> - BTC, AAVE, UNI), REITs, Infrastructure
+            </div>
+            <div class="highlight-box">
+                <span class="icon">🧭</span><strong>กลยุทธ์หลัก:</strong> ระยะยาว (60-70%) เน้นคุณภาพ | เก็งกำไร (30-40%) | บริหารความเสี่ยงเข้มงวด
+            </div>
+        </div>
+
+        <p>การวิเคราะห์โอกาสการลงทุนในช่วง 4-6 เดือนข้างหน้าตามกรอบคิด <strong>Ray Dalio</strong> พบว่าตลาดกำลังเข้าสู่ช่วง <strong>"Modern Mercantilism"</strong> ที่มีการเปลี่ยนแปลงระเบียบโลกอย่างชัดเจน นักลงทุนไทยที่มีประสบการณ์และรับความเสี่ยงได้สูงควรปรับพอร์ตโฟลิโอให้สอดคล้องกับสภาพแวดล้อมใหม่นี้</p>
+
+        <h2>หุ้นเทคโนโลยีและ AI สหรัฐฯ กำลังเข้าสู่จุดซื้อที่ดี</h2>
+        <p>ตลาดหุ้นเทคโนโลยีสหรัฐฯ ปรับตัวลงในเดือนเมษายนทำให้เกิดโอกาส <span class="highlight-text">buy on dips</span> ที่น่าสนใจ โดยเฉพาะหุ้นที่มี reward-to-risk ratio สูงกว่า 3-5 เท่าตามที่ต้องการ</p>
+        <ul>
+            <li class="stock-item"><strong>Palantir (PLTR):</strong> ราคาปัจจุบัน <span class="asset-target">$120</span> และเป้าหมาย <span class="asset-target">$240</span>. รับประโยชน์จากสัญญากองทัพสหรัฐฯ ($795 ล้าน) และ AI. แนะนำซื้อเมื่อย่อ <span class="asset-target">$110-115</span> หรือ <span class="asset-target">$85</span>.</li>
+            <li class="stock-item"><strong>Taiwan Semiconductor (TSM):</strong> ผู้นำชิป 2nm. แนวรับ <span class="asset-target">$185</span>, เป้าหมาย <span class="asset-target">$219-251</span>. ลูกค้าหลัก Apple, AMD.</li>
+            <li class="stock-item"><strong>หุ้นกลาโหม (Lockheed Martin - LMT):</strong> ราคา <span class="asset-target">$464</span>, เป้าหมาย <span class="asset-target">$540-605</span>. ปันผล 2.9%. รับประโยชน์จากโครงการ Golden Dome. เหมาะลงทุนระยะยาว.</li>
+            <li class="stock-item"><strong>เก็งกำไร (Super Micro Computer - SMCI):</strong> ราคา <span class="asset-target">$35</span> (ร่วงจาก high 62%). Reward/Risk 5:1. ความเสี่ยงสูง ผลตอบแทนสูง.</li>
+        </ul>
+
+        <h2>ตลาดเอเชียมีมูลค่าที่น่าดึงดูด (ฮ่องกงและเวียดนาม)</h2>
+        <ul>
+            <li class="stock-item">หุ้นจีนในฮ่องกง <span class="highlight-text">oversold</span> (RSI 25):
+                <ul>
+                    <li><strong>JD.com (09618.HK):</strong> เงินสดสุทธิ 110 พันล้านหยวน, Morningstar คาด upside 100%.</li>
+                    <li><strong>BYD (01211.HK):</strong> ผู้นำ EV, ราคาน่าสนใจ.</li>
+                </ul>
+            </li>
+            <li class="stock-item"><strong>Vietnam ETF (VNM):</strong> ราคา <span class="asset-target">$12.80-13.00</span>. GDP เวียดนามโต 7.09% (ปี 2024).</li>
+            <li>เงินไหลเข้าฮ่องกงจากจีนแผ่นดินใหญ่สูงเป็นประวัติการณ์ (29.62 พันล้าน HKD).</li>
+        </ul>
+
+        <h2>ตลาดยุโรป (Sector Rotation)</h2>
+        <ul>
+            <li><strong>ธนาคารยุโรป:</strong> ผลตอบแทน 26% (2024). NII คาดโต 1% (2025).</li>
+            <li class="stock-item"><strong>หุ้น Luxury Goods:</strong> ฟื้นตัว. <strong>LVMH</strong> (P/E ต่ำกว่าเฉลี่ย), <strong>Hermès</strong> (คาดโต 10% ปี 2025).</li>
+            <li class="stock-item"><strong>พลังงานและกลาโหม (Rheinmetall, Leonardo):</strong> ผลตอบแทนสูงจากงบ NATO เพิ่ม.</li>
+        </ul>
+
+        <h2>ETF และกองทุน (กระจายความเสี่ยง)</h2>
+        <ul>
+            <li class="stock-item"><strong>Commodity ETFs:</strong>
+                <ul>
+                    <li><strong>SPDR Gold Shares (GLD):</strong>
+                    <li><strong>Silver ETFs:</strong> อุปสงค์จาก AI และพลังงานแสงอาทิตย์.</li>
+                </ul>
+            </li>
+            <li class="stock-item"><strong>Emerging Market Bonds (EMB):</strong> ระมัดระวัง (Fund Outflows). เหมาะสำหรับ Exposure จำกัด.</li>
+        </ul>
+
+        <h2>สินทรัพย์ทางเลือก (ป้องกันความเสี่ยง)</h2>
+        <ul>
+            <li class="stock-item"><strong>REITs:</strong> สหรัฐฯ (<strong>PEB</strong> ต่ำกว่ามูลค่า 51%), สิงคโปร์ (Yield 7.7%).</li>
+            <li class="stock-item"><strong>Cryptocurrency (5-10% ของพอร์ต):</strong> <strong>BTC</strong> (เป้า VanEck <span class="asset-target">$180,000 Q1</span>), <strong>Aave, Uniswap</strong> (DeFi).</li>
+            <li class="stock-item"><strong>Infrastructure Funds (PAVE):</strong> รับประโยชน์จากงบ Biden.</li>
+        </ul>
+
+        <div class="portfolio-section">
+            <h2><span class="icon">📊</span> กลยุทธ์จัดสรรพอร์ตโฟลิโอตามกรอบ Ray Dalio</h2>
+            <p class="dalio-note">Dalio เตือนเรื่องวิกฤตหนี้สหรัฐฯ และแนะนำให้เพิ่มการถือทองคำเป็น 10-15%</p>
+            <div class="allocation-row">
+                <div class="allocation-card long-term">
+                    <h3><span class="icon">⏳</span> การลงทุนระยะยาว (60-70%)</h3>
+                    <ul>
+                        <li><span class="item-icon">💻</span> หุ้นเทคโนโลยี/AI สหรัฐฯ: 25%</li>
+                        <li><span class="item-icon">🌏</span> หุ้นเอเชีย (ฮ่องกง/เวียดนาม): 20%</li>
+                        <li><span class="item-icon">🏗️</span> REITs และ infrastructure: 15%</li>
+                        <li><span class="item-icon">💰</span> พันธบัตรและทองคำ: 10%</li>
+                    </ul>
+                </div>
+                <div class="allocation-card short-term">
+                    <h3><span class="icon">🚀</span> การเก็งกำไรระยะสั้น (30-40%)</h3>
+                    <ul>
+                        <li><span class="item-icon">📈</span> Momentum trades ในหุ้นเทคโนโลยี: 15%</li>
+                        <li><span class="item-icon">🇪🇺</span> Sector rotation ยุโรป: 10%</li>
+                        <li><span class="item-icon">💎</span> Cryptocurrency และ commodities: 5-10%</li>
+                        <li><span class="item-icon">💼</span> เงินสดสำหรับโอกาส: 5-10%</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="strategy-section" style="margin-top: 30px; background-color: #fef9e7; border-left: 5px solid #f1c40f;">
+            <h2 style="color:#b7950b; border-bottom-color: #f1c40f;">การจัดการความเสี่ยงและ Timing การเข้าลงทุน</h2>
+            <h3>Timing การเข้าลงทุน:</h3>
+            <ul>
+                <li><strong>มิถุนายน-กรกฎาคม:</strong> สะสมหุ้นเทคฯ สหรัฐฯ, REITs (Oversold), Vietnam ETF.</li>
+                <li><strong>สิงหาคม-กันยายน:</strong> เพิ่มหุ้นฮ่องกง, สะสม DeFi (Altcoin Season).</li>
+                <li><strong>ตุลาคม:</strong> Rebalance พอร์ต, เตรียม Crypto Rally Q4.</li>
+            </ul>
+            <h3>Stop-loss strategy:</h3>
+            <ul>
+                <li>Blue chip stocks: 15-20%</li>
+                <li>Growth stocks: 20-25%</li>
+                <li>Speculative plays: 25-30%</li>
+            </ul>
+            <h3>Take profit levels:</h3>
+            <ul>
+                <li>ขาย 25% เมื่อกำไร 30%</li>
+                <li>ขาย 50% เมื่อกำไร 50%</li>
+                <li>ที่เหลือ Run Profit ด้วย Trailing Stops</li>
+            </ul>
+        </div>
+
+        <h2>สรุปภาพรวม</h2>
+        <p>สภาพแวดล้อมการลงทุนในช่วงครึ่งหลังปี 2568 นำเสนอทั้งความท้าทายและโอกาส การผสมผสานระหว่างการปฏิวัติ AI, ความได้เปรียบของ supply chain, และนโยบายกลาโหม (Trump) สร้างภูมิทัศน์การลงทุนที่น่าสนใจ นักลงทุนไทยควรมุ่งเน้นที่หุ้นคุณภาพที่มี catalysts ชัดเจนพร้อมรักษาวินัยในการบริหารความเสี่ยงอย่างเคร่งครัด</p>
+
+        <div class="disclaimer">
+            <strong>ข้อจำกัดความรับผิดชอบ:</strong> ข้อมูลที่ให้ไว้เป็นเพียงการศึกษาเท่านั้น ไม่ควรถือเป็นคำแนะนำการลงทุน โปรดปรึกษาผู้เชี่ยวชาญทางการเงินก่อนตัดสินใจลงทุนใดๆ การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลให้รอบคอบก่อนตัดสินใจลงทุน
+        </div>
+    </div>
+</body>
+</html>
