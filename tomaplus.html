@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOMA+ : นวัตกรรมน้ำมะเขือเทศเพื่อการดูดซึมที่ดีขึ้น</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Visualization & Content Choices:
+        - Hero Stats (Lycopene Absorption, Farmer Income Increase): Goal: Inform. Method: Large HTML text. Justification: Immediate high-level impact. Library: HTML/CSS.
+        - Market Size (52.4B THB), Consumer Willingness (33% pay more): Goal: Inform. Method: HTML text. Justification: Key market context. Library: HTML/CSS.
+        - Smart Clarification Process: Goal: Organize. Method: HTML/CSS Flowchart using Tailwind. Justification: Clear visual representation of the process without SVG/Mermaid. Library: HTML/CSS.
+        - Lycopene Retention (85-95%), Enhanced Bioavailability: Goal: Inform. Method: HTML text. Justification: Key technical benefits of the innovation. Library: HTML/CSS.
+        - Competitor Comparison: Goal: Compare. Method: HTML Table styled with Tailwind. Justification: Direct and clear comparison of TOMA+ against alternatives. Library: HTML/CSS.
+        - Social Impact (Farmer Income Increase 25-30%, Product Loss Reduction 20-30%): Goal: Compare/Inform. Method: Chart.js Donut Charts. Justification: Visually engaging way to show proportional impact. Library: Chart.js (Canvas).
+        - Environmental Benefits (Food Loss Reduction 500kg/month, Recyclable Packaging): Goal: Inform. Method: Styled HTML list with Unicode icons. Justification: Concise and clear presentation of environmental contributions. Library: HTML/CSS.
+        - Project Timeline (4 Months): Goal: Organize/Change. Method: HTML/CSS vertical timeline using Tailwind. Justification: Visually tracks project phases and deliverables. Library: HTML/CSS.
+        - Budget Allocation (312,000 THB total): Goal: Compare/Inform. Method: Chart.js Pie Chart. Justification: Clearly shows distribution of project funds. Library: Chart.js (Canvas).
+        - All charts render to Canvas. NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #F5F5F5; /* Warm Light Gray */
+            color: #333333; /* Dark Gray Text */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 320px;
+                max-height: 380px;
+            }
+        }
+        .nav-link {
+            @apply px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-[#E0D6CC] hover:text-[#A0522D] transition-colors;
+        }
+        .nav-link-active {
+            @apply bg-[#A0522D] text-white;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, #A0522D 0%, #F4A460 100%); /* Sienna to Sandy Brown */
+        }
+        .section-title {
+            @apply text-3xl font-bold text-[#A0522D] mb-6 text-center;
+        }
+        .card {
+            @apply bg-white p-6 rounded-xl shadow-lg mb-8;
+        }
+        .flowchart-step {
+            @apply bg-white border-2 border-[#8FBC8F] text-[#333333] p-4 rounded-lg text-center mb-3 shadow-md;
+        }
+        .flowchart-arrow {
+            @apply text-3xl text-[#8FBC8F] my-2 text-center;
+        }
+        .timeline { @apply relative; }
+        .timeline-item { @apply mb-8 pl-10 relative; }
+        .timeline-item::before {
+            content: '';
+            @apply absolute left-0 top-1 w-px h-full bg-[#D2B48C];
+        }
+        .timeline-dot {
+            @apply absolute left-[-7px] top-0 w-4 h-4 rounded-full bg-[#A0522D] border-2 border-white;
+        }
+        .timeline-date {
+            @apply text-sm font-semibold text-[#A0522D] mb-1;
+        }
+        .timeline-title {
+            @apply text-lg font-semibold text-[#333333] mb-1;
+        }
+        .timeline-content {
+            @apply text-sm text-gray-600;
+        }
+        .stat-highlight {
+            @apply text-4xl font-bold text-[#A0522D];
+        }
+        .icon-benefit {
+            @apply text-3xl text-[#8FBC8F] mb-2; /* Dark Sea Green */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav id="navbar" class="bg-[#F5F5F5] shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-[#A0522D]">TOMA+</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#hero" class="nav-link">หน้าแรก</a>
+                        <a href="#problem" class="nav-link">ปัญหาและโอกาส</a>
+                        <a href="#innovation" class="nav-link">นวัตกรรม</a>
+                        <a href="#product" class="nav-link">ผลิตภัณฑ์</a>
+                        <a href="#impact" class="nav-link">ผลกระทบ</a>
+                        <a href="#roadmap" class="nav-link">แผนงาน</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-[#A0522D] hover:bg-[#E0D6CC] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#A0522D]">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#hero" class="block nav-link text-base">หน้าแรก</a>
+                <a href="#problem" class="block nav-link text-base">ปัญหาและโอกาส</a>
+                <a href="#innovation" class="block nav-link text-base">นวัตกรรม</a>
+                <a href="#product" class="block nav-link text-base">ผลิตภัณฑ์</a>
+                <a href="#impact" class="block nav-link text-base">ผลกระทบ</a>
+                <a href="#roadmap" class="block nav-link text-base">แผนงาน</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="hero-bg text-white py-20 px-4 min-h-[70vh] flex items-center">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">TOMA+</h1>
+            <p class="text-2xl md:text-3xl mb-4">นวัตกรรมน้ำมะเขือเทศกรองพิเศษ</p>
+            <p class="text-xl md:text-2xl mb-8">เพื่อการดูดซึมไลโคปีนที่ดีขึ้น <span class="font-bold underline decoration-yellow-300 decoration-4">2-3 เท่า</span></p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-lg">
+                    <p class="text-4xl font-bold">25-30%</p>
+                    <p class="text-lg mt-1">เพิ่มรายได้เกษตรกร</p>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-lg">
+                    <p class="text-4xl font-bold">5-7 เท่า</p>
+                    <p class="text-lg mt-1">เพิ่มมูลค่าผลผลิตตกเกรด</p>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm p-6 rounded-lg">
+                    <p class="text-4xl font-bold">รายแรก</p>
+                    <p class="text-lg mt-1">ของไทยที่เน้นการดูดซึม</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <section id="problem" class="my-16">
+            <h2 class="section-title">ปัญหาและโอกาสสู่ทางออกใหม่</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto">โครงการ TOMA+ เกิดขึ้นจากความเข้าใจในปัญหาที่ผู้บริโภคและเกษตรกรต้องเผชิญ พร้อมมองเห็นโอกาสในการสร้างสรรค์ผลิตภัณฑ์ที่ดีกว่าและสร้างผลกระทบเชิงบวกอย่างยั่งยืนในตลาดเครื่องดื่มเพื่อสุขภาพ</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-2xl font-semibold text-[#A0522D] mb-4">ความท้าทายที่ต้องก้าวข้าม</h3>
+                    <p class="text-gray-600 mb-3"><strong class="text-[#333333]">ปัญหาการดูดซึมไลโคปีน:</strong> น้ำมะเขือเทศทั่วไปให้ร่างกายดูดซึมไลโคปีนได้เพียง <span class="font-bold">5-10%</span> จากผลสด (Cooperstone et al., 2022) เนื่องจากเส้นใย, โครงสร้างเซลล์พืช, และขนาดอนุภาคเป็นอุปสรรค</p>
+                    <p class="text-gray-600"><strong class="text-[#333333]">ปัญหาเกษตรกร (จ.ชัยนาท):</strong> ผลผลิตเสียหาย <span class="font-bold">20-30%</span> จากมาตรฐานรูปร่าง, ราคาตกต่ำในช่วงผลผลิตล้นตลาด, และขาดการแปรรูปที่เหมาะสมเพื่อเพิ่มมูลค่า</p>
+                </div>
+                <div class="card">
+                    <h3 class="text-2xl font-semibold text-[#8FBC8F] mb-4">โอกาสทองในตลาดสุขภาพ</h3>
+                    <p class="text-gray-600 mb-3">ตลาดเครื่องดื่มเพื่อสุขภาพในไทยมีศักยภาพสูง:</p>
+                    <ul class="list-none space-y-2">
+                        <li class="flex items-start"><span class="text-[#8FBC8F] mr-2">✔</span>มูลค่าตลาด <span class="font-bold">52.4 พันล้านบาท</span> (คาดการณ์ปี 2568)</li>
+                        <li class="flex items-start"><span class="text-[#8FBC8F] mr-2">✔</span>ผู้บริโภคไทย <span class="font-bold">33%</span> ยินดีจ่ายเพิ่มเพื่อผลิตภัณฑ์สุขภาพ</li>
+                        <li class="flex items-start"><span class="text-[#8FBC8F] mr-2">✔</span>ตลาดน้ำผักผลไม้พรีเมียมยังมีช่องว่างสำหรับนวัตกรรม</li>
+                        <li class="flex items-start"><span class="text-[#8FBC8F] mr-2">✔</span>เทรนด์ "Functional Beverages" เติบโต <span class="font-bold">15-20%</span> ต่อปี</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="innovation" class="my-16">
+            <h2 class="section-title">นวัตกรรมของเรา: TOMA+</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto">หัวใจสำคัญของ TOMA+ คือ <strong class="text-[#A0522D]">Smart Clarification Technology</strong> ซึ่งเป็นกระบวนการกรองพิเศษที่พัฒนาขึ้นเพื่อเพิ่มการดูดซึมไลโคปีนและสารอาหารสำคัญอื่นๆ จากมะเขือเทศ โดยยังคงรสชาติและความสดใหม่ของวัตถุดิบจากธรรมชาติ</p>
+            <div class="card">
+                <h3 class="text-2xl font-semibold text-center text-[#A0522D] mb-6">กระบวนการ Smart Clarification</h3>
+                <div class="grid md:grid-cols-4 gap-4 items-start">
+                    <div class="flowchart-step">
+                        <p class="font-semibold text-lg">1. Cold Extraction</p>
+                        <p class="text-sm">สกัดเย็น (&lt; 40°C) เพื่อรักษาวิตามินและเอนไซม์</p>
+                    </div>
+                    <div class="hidden md:flex items-center justify-center h-full flowchart-arrow">→</div>
+                    <div class="md:hidden text-center flowchart-arrow">↓</div>
+                    <div class="flowchart-step">
+                        <p class="font-semibold text-lg">2. Enzyme Treatment</p>
+                        <p class="text-sm">ใช้ Pectinase ทำลายโครงสร้างเซลล์ ปลดปล่อยไลโคปีน</p>
+                    </div>
+                     <div class="hidden md:flex items-center justify-center h-full flowchart-arrow">→</div>
+                     <div class="md:hidden text-center flowchart-arrow">↓</div>
+                    <div class="flowchart-step">
+                        <p class="font-semibold text-lg">3. Multi-Stage Filtration</p>
+                        <p class="text-sm">กรองหลายขั้นตอน (100µm → 10µm → 1µm) เพื่อความใส</p>
+                    </div>
+                     <div class="hidden md:flex items-center justify-center h-full flowchart-arrow">→</div>
+                     <div class="md:hidden text-center flowchart-arrow">↓</div>
+                    <div class="flowchart-step">
+                        <p class="font-semibold text-lg">4. Natural Stabilization</p>
+                        <p class="text-sm">ควบคุม pH และ Gentle Homogenization เพื่อความคงตัว</p>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <p class="text-lg text-gray-700"><strong class="text-[#A0522D]">ผลลัพธ์ที่คาดหวัง:</strong></p>
+                    <p class="text-gray-600">ไลโคปีนคงเหลือ (Lycopene retention) <span class="font-bold">85-95%</span></p>
+                    <p class="text-gray-600">ความใสที่ดีขึ้น <span class="font-bold">70-80%</span> เมื่อเทียบกับน้ำมะเขือเทศทั่วไป</p>
+                    <p class="text-gray-600">การดูดซึมไลโคปีนเพิ่มขึ้น <span class="font-bold">2-3 เท่า</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="product" class="my-16">
+            <h2 class="section-title">ผลิตภัณฑ์ของเรา: TOMA+ แตกต่างอย่างไร?</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto">TOMA+ ไม่ได้เป็นเพียงน้ำมะเขือเทศ แต่เป็นนวัตกรรมที่สร้างความแตกต่างอย่างชัดเจนในตลาด เรามุ่งเน้นการเพิ่มประสิทธิภาพการดูดซึมสารอาหาร ควบคู่ไปกับการสนับสนุนเกษตรกรไทย และใช้วัตถุดิบคุณภาพสูงจากธรรมชาติ 100%</p>
+            <div class="card overflow-x-auto">
+                <table class="w-full min-w-[600px]">
+                    <thead>
+                        <tr class="bg-[#A0522D] text-white">
+                            <th class="p-3 text-left font-semibold">คุณสมบัติ</th>
+                            <th class="p-3 text-left font-semibold">น้ำมะเขือเทศทั่วไป</th>
+                            <th class="p-3 text-left font-semibold">น้ำมะเขือเทศนำเข้า</th>
+                            <th class="p-3 text-left font-semibold bg-[#8FBC8F]">TOMA+</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-200">
+                            <td class="p-3">ความใส</td>
+                            <td class="p-3">ข้น มีตะกอน</td>
+                            <td class="p-3">ใส แต่เจือจาง</td>
+                            <td class="p-3 font-semibold text-[#333333]">กรองพิเศษ เนื้อสัมผัสดี</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 bg-gray-50">
+                            <td class="p-3">ปริมาณไลโคปีน</td>
+                            <td class="p-3">สูง แต่ดูดซึมได้น้อย</td>
+                            <td class="p-3">ต่ำจากการเจือจาง</td>
+                            <td class="p-3 font-semibold text-[#333333]">สูง + ดูดซึมดีเยี่ยม</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="p-3">การดูดซึม</td>
+                            <td class="p-3">5-10%</td>
+                            <td class="p-3">10-15%</td>
+                            <td class="p-3 font-semibold text-[#333333]">15-30% (ดีขึ้น 2-3 เท่า)</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 bg-gray-50">
+                            <td class="p-3">วัตถุดิบ</td>
+                            <td class="p-3">นำเข้า/ผสม</td>
+                            <td class="p-3">นำเข้า</td>
+                            <td class="p-3 font-semibold text-[#333333]">มะเขือเทศไทย 100%</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3">ผลกระทบต่อสังคม</td>
+                            <td class="p-3">น้อย</td>
+                            <td class="p-3">ไม่มี</td>
+                            <td class="p-3 font-semibold text-[#333333]">สูง (สนับสนุนเกษตรกร)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="impact" class="my-16">
+            <h2 class="section-title">ผลกระทบและความยั่งยืน</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto">TOMA+ มุ่งมั่นสร้างผลกระทบเชิงบวกที่วัดผลได้ ทั้งต่อสังคม สิ่งแวดล้อม และเศรษฐกิจชุมชน เราเชื่อว่านวัตกรรมที่ดีต้องควบคู่ไปกับการพัฒนาที่ยั่งยืน</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-2xl font-semibold text-[#A0522D] mb-4 text-center">ต่อสังคมและเกษตรกร</h3>
+                    <div class="chart-container mb-4">
+                        <canvas id="socialImpactChart"></canvas>
+                    </div>
+                    <p class="text-center text-gray-600">TOMA+ ช่วยเพิ่มรายได้ให้เกษตรกรอย่างมีนัยสำคัญ และลดการสูญเสียผลผลิตจากการนำมะเขือเทศที่ไม่ผ่านเกณฑ์รูปร่างมาสร้างมูลค่าเพิ่ม</p>
+                </div>
+                <div class="card">
+                    <h3 class="text-2xl font-semibold text-[#8FBC8F] mb-4 text-center">ต่อสิ่งแวดล้อม</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <span class="icon-benefit mr-3">🌍</span>
+                            <div>
+                                <p class="font-semibold text-gray-700">ลดการสูญเสียอาหาร (Food Loss)</p>
+                                <p class="text-gray-600">เป้าหมายลด <span class="font-bold">500 กก./เดือน</span> ในระยะแรก</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                             <span class="icon-benefit mr-3">♻️</span>
+                            <div>
+                                <p class="font-semibold text-gray-700">การจัดการของเสียอย่างยั่งยืน</p>
+                                <p class="text-gray-600">กากมะเขือเทศทำปุ๋ยหมัก, บรรจุภัณฑ์แก้วรีไซเคิล <span class="font-bold">100%</span></p>
+                            </div>
+                        </div>
+                         <div class="flex items-center">
+                             <span class="icon-benefit mr-3">🌱</span>
+                            <div>
+                                <p class="font-semibold text-gray-700">ส่งเสริมการผลิตในพื้นที่</p>
+                                <p class="text-gray-600">ลดการขนส่งระยะไกล ลด Carbon Footprint</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="my-16">
+            <h2 class="section-title">แผนการดำเนินงานและการลงทุน</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto">โครงการ TOMA+ มีแผนการดำเนินงานที่ชัดเจนและเป็นระบบในระยะ 4 เดือนแรก พร้อมการจัดสรรงบประมาณอย่างโปร่งใสและมีประสิทธิภาพ เพื่อให้บรรลุเป้าหมายการพัฒนาผลิตภัณฑ์ต้นแบบและเตรียมความพร้อมสู่ตลาด</p>
+            <div class="grid md:grid-cols-5 gap-8">
+                <div class="md:col-span-3 card">
+                    <h3 class="text-2xl font-semibold text-[#A0522D] mb-6">แผนการดำเนินงาน (4 เดือน)</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <p class="timeline-date">เดือนที่ 1</p>
+                            <h4 class="timeline-title">Process Development & Optimization</h4>
+                            <p class="timeline-content">ออกแบบและทดสอบระบบ Smart Clarification ในระดับ Lab-scale, เพิ่มประสิทธิภาพการผลิต, เก็บข้อมูล Baseline</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <p class="timeline-date">เดือนที่ 2</p>
+                            <h4 class="timeline-title">Pilot Production & Product Characterization</h4>
+                            <p class="timeline-content">ผลิตผลิตภัณฑ์ต้นแบบ 500 ขวด, วิเคราะห์คุณภาพผลิตภัณฑ์, พัฒนาบรรจุภัณฑ์และการออกแบบฉลาก</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <p class="timeline-date">เดือนที่ 3</p>
+                            <h4 class="timeline-title">Quality Validation & Consumer Testing</h4>
+                            <p class="timeline-content">ทดสอบอายุการเก็บรักษา, ทดสอบการยอมรับของผู้บริโภค 100 คน, เตรียมเอกสาร อย.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <p class="timeline-date">เดือนที่ 4</p>
+                            <h4 class="timeline-title">Market Validation & Scale-up Planning</h4>
+                            <p class="timeline-content">ทดสอบตลาดเบื้องต้น, พัฒนาแผนการตลาด, ยื่นจดทะเบียนนวัตกรรม, เตรียมขยายสู่ตลาดเชิงพาณิชย์</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:col-span-2 card">
+                    <h3 class="text-2xl font-semibold text-[#A0522D] mb-6 text-center">งบประมาณโครงการ</h3>
+                    <p class="text-center text-gray-600 mb-4">รวม <span class="font-bold text-xl">312,000</span> บาท</p>
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vision" class="my-16 text-center py-12 bg-white rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold text-[#A0522D] mb-4">วิสัยทัศน์และอนาคตของ TOMA+</h2>
+            <p class="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">เรามุ่งมั่นที่จะพัฒนา TOMA+ ให้เป็นผู้นำในตลาดเครื่องดื่มเพื่อสุขภาพ ที่ไม่เพียงส่งมอบคุณค่าทางโภชนาการ แต่ยังสร้างความยั่งยืนให้แก่ชุมชนและสิ่งแวดล้อม พร้อมต่อยอดนวัตกรรมสู่ผลิตภัณฑ์อื่นๆ ในอนาคต</p>
+            <p class="text-gray-600 mb-2">ติดต่อหัวหน้าโครงการ: นายภูริพรรษ ใจวีระวัฒนากุล</p>
+            <p class="text-gray-600 mb-1">โทร: <a href="tel:0842459191" class="text-[#A0522D] hover:underline">084-245-9191</a></p>
+            <p class="text-gray-600">อีเมล: <a href="mailto:phuripat.jkul@gmail.com" class="text-[#A0522D] hover:underline">phuripat.jkul@gmail.com</a></p>
+        </section>
+    </div>
+
+    <footer class="bg-[#333333] text-gray-300 text-center p-6">
+        <p>&copy; 2025 โครงการ TOMA+ โดย บริษัท เบสท์เฟรนด์ฟู้ด จำกัด และพันธมิตร</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.querySelectorAll('svg').forEach(svg => svg.classList.toggle('hidden'));
+        });
+
+        // Close mobile menu on link click
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenuButton.querySelectorAll('svg').forEach(svg => svg.classList.toggle('hidden'));
+                 // Ensure the correct icon is shown after click
+                mobileMenuButton.querySelector('svg:first-child').classList.remove('hidden'); // Show burger
+                mobileMenuButton.querySelector('svg:last-child').classList.add('hidden'); // Hide X
+            });
+        });
+        
+        // Navbar active state and scroll padding adjustment
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+        const navbar = document.getElementById('navbar');
+        let navbarHeight = navbar.offsetHeight;
+
+        window.addEventListener('scroll', () => {
+            navbarHeight = navbar.offsetHeight; // Recalculate in case of resize
+            document.documentElement.style.setProperty('--scroll-padding', navbarHeight + 'px');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - navbarHeight - 10; // Adjust for sticky nav
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('nav-link-active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('nav-link-active');
+                }
+            });
+        });
+         // Initial calculation for scroll padding
+        navbarHeight = navbar.offsetHeight;
+        document.documentElement.style.setProperty('--scroll-padding', navbarHeight + 'px');
+
+
+        // Chart.js label wrapping function
+        function wrapChartLabels(label, maxWidth) {
+            if (typeof label !== 'string') return label; // Return as is if not a string (e.g., already an array)
+            const words = label.split(' ');
+            let lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + ' ' + word).trim().length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            }
+            if (currentLine.length > 0) {
+                lines.push(currentLine);
+            }
+            return lines.length > 0 ? lines : [label]; // Ensure it returns an array, even for single line
+        }
+
+        const chartTooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const chartDefaultFont = { family: 'Kanit', size: 12 };
+
+        // Social Impact Chart
+        const socialImpactCtx = document.getElementById('socialImpactChart').getContext('2d');
+        const socialImpactLabels = [
+            wrapChartLabels('เพิ่มรายได้เกษตรกร (25-30%)', 16),
+            wrapChartLabels('ลดการสูญเสียผลผลิต (20-30%)', 16)
+        ];
+        new Chart(socialImpactCtx, {
+            type: 'doughnut',
+            data: {
+                labels: socialImpactLabels,
+                datasets: [{
+                    label: 'ผลกระทบต่อสังคมและเกษตรกร',
+                    data: [27.5, 25], // Using average values
+                    backgroundColor: ['#A0522D', '#8FBC8F'], // Sienna, DarkSeaGreen
+                    borderColor: '#F5F5F5',
+                    borderWidth: 3,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: chartDefaultFont }
+                    },
+                    tooltip: {
+                        callbacks: { title: chartTooltipTitleCallback },
+                        titleFont: chartDefaultFont,
+                        bodyFont: chartDefaultFont,
+                    }
+                }
+            }
+        });
+
+        // Budget Chart
+        const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+        const budgetLabels = [
+            wrapChartLabels('R&D และ Process Development', 16),
+            wrapChartLabels('Product Development', 16),
+            wrapChartLabels('Market Validation', 16),
+            wrapChartLabels('งบสำรอง', 16)
+        ];
+        new Chart(budgetCtx, {
+            type: 'pie',
+            data: {
+                labels: budgetLabels,
+                datasets: [{
+                    label: 'การจัดสรรงบประมาณ',
+                    data: [120000, 100000, 62000, 30000],
+                    backgroundColor: ['#A0522D', '#8FBC8F', '#F4A460', '#D2B48C'], // Sienna, DarkSeaGreen, SandyBrown, Tan
+                    borderColor: '#F5F5F5',
+                    borderWidth: 3,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: chartDefaultFont, boxWidth:12, padding:10 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: chartTooltipTitleCallback,
+                            label: function(context) {
+                                let label = context.chart.data.labels[context.dataIndex];
+                                if (Array.isArray(label)) {
+                                    label = label.join(' ');
+                                }
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', minimumFractionDigits: 0 }).format(context.parsed);
+                                }
+                                return label;
+                            }
+                        },
+                        titleFont: chartDefaultFont,
+                        bodyFont: chartDefaultFont,
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
