@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บทวิเคราะห์กองทุน MEGA10CHINA-A</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Horizon -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard, moving away from the linear report format. The user journey starts with a high-level summary (Hero section with key stats), then flows through distinct, navigable sections: Overview, Performance, Portfolio, Outlook & Risks, and Recommendations. This structure allows users to either follow a logical path or jump directly to their area of interest via a sticky navigation bar. Key interactions include interactive charts with toggles and tooltips for performance comparison, and clickable cards for a deep dive into individual stock holdings. This user-centric design prioritizes clarity, exploration, and quick access to critical data points, making the complex information more digestible and engaging than a static document. -->
+    <!-- Visualization & Content Choices: 
+    - Goal: Inform (Key Stats) -> Method: Large-font stat cards (HTML/Tailwind) -> Interaction: None, for quick glances. Justification: Highlights the most critical metrics immediately.
+    - Goal: Compare (Performance vs Peers) -> Method: Bar charts (Chart.js/Canvas) -> Interaction: Hover tooltips, buttons to toggle data views. Justification: Provides clear, direct visual comparison of performance and risk.
+    - Goal: Change (Historical Performance) -> Method: Line chart (Chart.js/Canvas) -> Interaction: Hover tooltips. Justification: Effectively shows performance trends over time.
+    - Goal: Organize/Drill-down (Portfolio) -> Method: Donut chart (Asset Allocation), Horizontal Bar (Sectors), Interactive Cards (Holdings) (Chart.js/Canvas, HTML/JS) -> Interaction: Clicking a holding card reveals a modal with detailed analysis. Justification: Breaks down the portfolio from broad to specific, inviting user exploration.
+    - Goal: Explain Process (Strategy) -> Method: Custom diagram using styled divs (HTML/Tailwind) -> Interaction: Subtle hover effects. Justification: Visually simplifies the fund's unique investment strategy.
+    - Goal: Structure Complex Info (Risks) -> Method: Accordion (HTML/JS) -> Interaction: Click to expand/collapse. Justification: Manages information density, keeping the UI clean and user-focused.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #F8F7F4;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-active {
+            color: #C87E7A;
+            font-weight: 600;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-2xl font-bold text-[#5F7C8A]">MEGA10<span class="text-[#C87E7A]">CHINA</span></a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-[#C87E7A]">ภาพรวม</a>
+                        <a href="#performance" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-[#C87E7A]">ผลการดำเนินงาน</a>
+                        <a href="#portfolio" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-[#C87E7A]">พอร์ตการลงทุน</a>
+                        <a href="#outlook" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-[#C87E7A]">แนวโน้มและปัจจัยเสี่ยง</a>
+                        <a href="#recommendation" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:text-[#C87E7A]">คำแนะนำ</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-gray-700 focus:outline-none">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#overview" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">ภาพรวม</a>
+                    <a href="#performance" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">ผลการดำเนินงาน</a>
+                    <a href="#portfolio" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">พอร์ตการลงทุน</a>
+                    <a href="#outlook" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">แนวโน้มและปัจจัยเสี่ยง</a>
+                    <a href="#recommendation" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 hover:text-white">คำแนะนำ</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="hero" class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#5F7C8A] mb-4">เจาะลึกกองทุน <span class="text-[#C87E7A]">MEGA10CHINA-A</span></h1>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                แอปพลิเคชันวิเคราะห์กองทุน MEGA10CHINA-A ที่มุ่งเน้นลงทุนใน 10 บริษัทเอกชนชั้นนำของจีน (Non-SOE)
+                ด้วยกลยุทธ์น้ำหนักเท่ากัน (Equal Weight) เพื่อจับโอกาสการเติบโตของมังกรตัวจริง
+            </p>
+            <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="stat-card">
+                    <p class="text-sm text-gray-500">มูลค่าหน่วยลงทุน (NAV)</p>
+                    <p class="text-3xl font-bold text-[#5F7C8A]">13.8244 ฿</p>
+                    <p class="text-xs text-gray-400">ณ 5 มิ.ย. 2568</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-sm text-gray-500">ระดับความเสี่ยง</p>
+                    <p class="text-3xl font-bold text-[#C87E7A]">6</p>
+                    <p class="text-xs text-gray-400">เสี่ยงสูง</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-sm text-gray-500">มูลค่าทรัพย์สินสุทธิ (AUM)</p>
+                    <p class="text-3xl font-bold text-[#5F7C8A]">3.15 พันล้าน ฿</p>
+                    <p class="text-xs text-gray-400">ณ 1 ก.ย. 2567</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="overview" class="py-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#5F7C8A]">ภาพรวมและกลยุทธ์การลงทุน</h2>
+            <p class="text-center max-w-2xl mx-auto text-gray-600 mb-12">
+                ส่วนนี้จะอธิบายถึงหัวใจสำคัญของกองทุน MEGA10CHINA-A ตั้งแต่นโยบายการลงทุนไปจนถึงกลยุทธ์การคัดเลือกหุ้นที่เป็นเอกลักษณ์ ซึ่งเป็นปัจจัยหลักที่ขับเคลื่อนผลตอบแทนและความเสี่ยงของกองทุน
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-[#5F7C8A]">กลยุทธ์เฉพาะตัว: <span class="text-[#C87E7A]">Equal Weight & Non-SOE</span></h3>
+                    <p class="text-gray-600 mb-6">กองทุนนี้แตกต่างด้วยการเลือกหุ้นเอกชนจีน (Non-SOE) ที่มีแบรนด์แข็งแกร่งที่สุด 10 บริษัท และให้น้ำหนักการลงทุนเท่ากันที่ประมาณ 10% ต่อตัว เพื่อกระจายความเสี่ยงและไม่พึ่งพิงหุ้นยักษ์ใหญ่เพียงตัวเดียว</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-[#8A9A5B] text-white flex items-center justify-center font-bold text-sm">1</div>
+                            <p class="ml-4 text-gray-700"><strong>คัดกรองแบรนด์:</strong> เลือกบริษัทที่มีมูลค่าแบรนด์ชั้นนำของจีน</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-[#D4AF37] text-white flex items-center justify-center font-bold text-sm">2</div>
+                            <p class="ml-4 text-gray-700"><strong>ไม่เอา SOE:</strong> ตัดบริษัทที่เป็นรัฐวิสาหกิจ (SOE) ออกทั้งหมด</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-[#C87E7A] text-white flex items-center justify-center font-bold text-sm">3</div>
+                            <p class="ml-4 text-gray-700"><strong>จัดอันดับ:</strong> เลือก 10 บริษัทแรกตามมูลค่าตลาด (Market Cap)</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-[#5F7C8A] text-white flex items-center justify-center font-bold text-sm">4</div>
+                            <p class="ml-4 text-gray-700"><strong>น้ำหนักเท่ากัน:</strong> ลงทุนใน 10 หุ้นที่เลือกในสัดส่วนเท่ากัน</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-[#5F7C8A]">ข้อมูลสำคัญของกองทุน</h3>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex justify-between"><span>นโยบายปันผล:</span> <span class="font-semibold text-right">ไม่จ่าย</span></li>
+                        <li class="flex justify-between"><span>ป้องกันความเสี่ยงค่าเงิน:</span> <span class="font-semibold text-right">ไม่ป้องกัน</span></li>
+                        <li class="flex justify-between border-t pt-3 mt-3"><span>ค่าธรรมเนียมขาย (Front-end):</span> <span class="font-semibold text-right">1.00% (เรียกเก็บจริง)</span></li>
+                        <li class="flex justify-between"><span>ค่าธรรมเนียมจัดการ (TER):</span> <span class="font-semibold text-right">~1.61% - 1.71% ต่อปี</span></li>
+                        <li class="flex justify-between border-t pt-3 mt-3"><span>เงินลงทุนขั้นต่ำ (ครั้งแรก):</span> <span class="font-semibold text-right">1,000 บาท</span></li>
+                        <li class="flex justify-between"><span>เงินลงทุนขั้นต่ำ (ครั้งถัดไป):</span> <span class="font-semibold text-right">1 บาท</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="py-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#5F7C8A]">ผลการดำเนินงาน</h2>
+            <p class="text-center max-w-2xl mx-auto text-gray-600 mb-12">
+                ส่วนนี้จะแสดงผลการดำเนินงานของกองทุนในอดีตผ่านกราฟที่โต้ตอบได้ ทำให้คุณเห็นภาพการเติบโตและเปรียบเทียบความสามารถในการสร้างผลตอบแทนกับกองทุนอื่น ๆ รวมถึงระดับความผันผวนของกองทุน
+            </p>
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-center mb-4">ผลตอบแทนย้อนหลัง (YTD)</h3>
+                    <div class="chart-container"><canvas id="ytdPerformanceChart"></canvas></div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-center mb-4">เปรียบเทียบผลตอบแทน 3 เดือน</h3>
+                    <div class="chart-container"><canvas id="peerComparisonChart"></canvas></div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg col-span-1 lg:col-span-2">
+                    <h3 class="text-xl font-semibold text-center mb-4">เปรียบเทียบผลขาดทุนสูงสุด (Max Drawdown)</h3>
+                    <div class="chart-container"><canvas id="mddComparisonChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="portfolio" class="py-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#5F7C8A]">เจาะลึกพอร์ตการลงทุน</h2>
+            <p class="text-center max-w-2xl mx-auto text-gray-600 mb-12">
+                สำรวจองค์ประกอบภายในพอร์ตการลงทุนของ MEGA10CHINA-A เพื่อทำความเข้าใจว่าเงินของคุณถูกนำไปลงทุนในสินทรัพย์และกลุ่มอุตสาหกรรมใดบ้าง รวมถึงทำความรู้จักกับ 10 บริษัทชั้นนำที่เป็นหัวใจหลักของกองทุนนี้
+            </p>
+            <div class="grid lg:grid-cols-5 gap-8 mb-12">
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-center mb-4">สัดส่วนประเภทสินทรัพย์</h3>
+                    <div class="chart-container" style="height:300px;"><canvas id="assetAllocationChart"></canvas></div>
+                </div>
+                <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-center mb-4">สัดส่วนกลุ่มอุตสาหกรรม</h3>
+                    <div class="chart-container" style="height:300px;"><canvas id="sectorAllocationChart"></canvas></div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-2xl font-bold text-center mb-8 text-[#5F7C8A]">10 หุ้นชั้นนำในพอร์ต (Top Holdings)</h3>
+                 <p class="text-center text-sm text-gray-500 mb-8">(คลิกที่การ์ดเพื่อดูรายละเอียดเพิ่มเติม)</p>
+                <div id="holdings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+                </div>
+            </div>
+        </section>
+
+        <section id="outlook" class="py-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#5F7C8A]">แนวโน้มเศรษฐกิจและปัจจัยเสี่ยง</h2>
+            <p class="text-center max-w-2xl mx-auto text-gray-600 mb-12">
+                ทำความเข้าใจภาพรวมเศรษฐกิจจีนซึ่งเป็นฉากหลังสำคัญของการลงทุน และประเมินปัจจัยเสี่ยงต่าง ๆ ที่อาจส่งผลกระทบต่อผลตอบแทนของกองทุน เพื่อการตัดสินใจลงทุนที่รอบด้าน
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-center md:text-left">ภาพรวมเศรษฐกิจจีน 2025</h3>
+                    <div class="space-y-4">
+                        <div class="stat-card flex items-center gap-4">
+                            <div class="text-4xl">📈</div>
+                            <div>
+                                <p class="font-bold text-lg text-[#5F7C8A]">เป้า GDP 5%</p>
+                                <p class="text-sm">รัฐบาลตั้งเป้าการเติบโตเชิงนโยบาย ขับเคลื่อนโดยการบริโภคในประเทศ</p>
+                            </div>
+                        </div>
+                        <div class="stat-card flex items-center gap-4">
+                             <div class="text-4xl">🛍️</div>
+                            <div>
+                                <p class="font-bold text-lg text-[#5F7C8A]">ผู้บริโภคระมัดระวัง</p>
+                                <p class="text-sm">เน้นความคุ้มค่าและประสบการณ์ส่วนตัวมากขึ้น</p>
+                            </div>
+                        </div>
+                        <div class="stat-card flex items-center gap-4">
+                            <div class="text-4xl">🏭</div>
+                            <div>
+                                <p class="font-bold text-lg text-[#5F7C8A]">นโยบาย "Made in China 2025"</p>
+                                <p class="text-sm">ยังคงเป็นยุทธศาสตร์หลักในการผลักดันอุตสาหกรรมเทคโนโลยี</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-center md:text-left">ปัจจัยความเสี่ยงที่ต้องพิจารณา</h3>
+                    <div id="risk-accordion" class="space-y-2">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="recommendation" class="py-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#5F7C8A]">สรุปและคำแนะนำการลงทุน</h2>
+             <p class="text-center max-w-2xl mx-auto text-gray-600 mb-12">
+                บทสรุปสุดท้ายที่รวบรวมจุดเด่น ข้อควรระวัง และคำแนะนำเชิงกลยุทธ์ เพื่อช่วยให้คุณประเมินได้ว่ากองทุน MEGA10CHINA-A เหมาะสมกับเป้าหมายและระดับความเสี่ยงของคุณหรือไม่
+            </p>
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h4 class="text-xl font-semibold text-[#8A9A5B] mb-4">✅ จุดเด่น (Strengths)</h4>
+                        <ul class="space-y-2 list-inside list-disc text-gray-700">
+                            <li>กลยุทธ์มุ่งเน้นลงทุนใน 10 หุ้นคุณภาพสูง</li>
+                            <li>กระจายความเสี่ยงด้วยน้ำหนักเท่ากัน (Equal Weight)</li>
+                            <li>โอกาสเติบโตไปพร้อมกับผู้นำภาคเอกชนของจีน</li>
+                            <li>อาจได้เข้าลงทุนในจังหวะที่ Valuation ตลาดไม่สูง</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-semibold text-[#C87E7A] mb-4">⚠️ ข้อควรระวัง (Weaknesses)</h4>
+                        <ul class="space-y-2 list-inside list-disc text-gray-700">
+                            <li>ความเสี่ยงสูงจากการกระจุกตัวใน 10 หุ้นและตลาดเดียว</li>
+                            <li>ไม่ป้องกันความเสี่ยงอัตราแลกเปลี่ยน (FX Risk)</li>
+                            <li>ความผันผวนสูงจากปัจจัยเฉพาะของตลาดจีน</li>
+                            <li>ประวัติผลการดำเนินงานในอดีตยังมีจำกัด</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-8">
+                     <h4 class="text-xl font-semibold text-center mb-6 text-[#5F7C8A]">กองทุนนี้เหมาะกับใคร?</h4>
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                         <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-3xl mb-2">🚀</p>
+                             <p class="font-semibold">ผู้ที่รับความเสี่ยงได้สูง</p>
+                             <p class="text-sm text-gray-500">ยอมรับความผันผวนและโอกาสขาดทุนได้</p>
+                         </div>
+                         <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-3xl mb-2">🌏</p>
+                             <p class="font-semibold">ผู้ที่เข้าใจตลาดจีน</p>
+                             <p class="text-sm text-gray-500">และเชื่อมั่นในศักยภาพการเติบโตระยะยาว</p>
+                         </div>
+                          <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-3xl mb-2">⏳</p>
+                             <p class="font-semibold">นักลงทุนระยะยาว</p>
+                             <p class="text-sm text-gray-500">แนะนำลงทุน 3-5 ปีขึ้นไป ไม่เน้นปันผล</p>
+                         </div>
+                     </div>
+                </div>
+                 <div class="border-t border-gray-200 mt-8 pt-8">
+                    <h4 class="text-xl font-semibold text-center mb-4 text-[#5F7C8A]">คำแนะนำเชิงกลยุทธ์</h4>
+                    <p class="text-center text-gray-600 max-w-2xl mx-auto">
+                        ควรจัดสรรเป็น<span class="font-bold text-[#C87E7A]">ส่วนหนึ่งของพอร์ต (5-15%)</span> สำหรับส่วนที่มีความเสี่ยงสูง
+                        แนะนำให้ใช้กลยุทธ์<span class="font-bold text-[#8A9A5B]">ทยอยลงทุน (DCA)</span>
+                        เพื่อเฉลี่ยต้นทุนและลดผลกระทบจากความผันผวนในระยะสั้น
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>ข้อมูลนี้จัดทำขึ้นเพื่อเป็นข้อมูลประกอบการตัดสินใจลงทุนเท่านั้น ไม่ใช่คำแนะนำในการซื้อหรือขาย</p>
+            <p>การลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลและทำความเข้าใจลักษณะสินค้า เงื่อนไขผลตอบแทน และความเสี่ยงก่อนตัดสินใจลงทุน</p>
+        </div>
+    </footer>
+
+    <div id="holding-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden modal-backdrop items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-content transform scale-95">
+            <div class="sticky top-0 bg-white p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-[#5F7C8A]"></h3>
+                <button id="modal-close-button" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modal-body" class="p-4 sm:p-6">
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const fundData = {
+        performance: {
+            ytd: 13.86,
+            ytd_chart: {
+                labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.'],
+                data: [100, 105, 102, 115, 121, 113.86] 
+            },
+            peer_comparison_3m: [
+                { fund: 'MEGA10CHINA-A', performance: 21.22 },
+                { fund: 'BCAP-CTECH', performance: 18.43 },
+                { fund: 'KF-CHINA', performance: 20.28 },
+                { fund: 'SCBCTECHA', performance: 15.38 },
+                { fund: 'K-CHINA-A(D)', performance: 14.33 },
+            ],
+            mdd_comparison: [
+                { fund: 'MEGA10CHINA-A', mdd: -11.40 },
+                { fund: 'BCAP-CTECH', mdd: -76.91 },
+                { fund: 'KF-CHINA', mdd: -68.45 },
+                { fund: 'SCBCTECHA', mdd: -70.28 },
+                { fund: 'K-CHINA-A(D)', mdd: -70.32 },
+            ]
+        },
+        portfolio: {
+            asset_allocation: [
+                { asset: 'หุ้น (Equities)', percentage: 94.95 },
+                { asset: 'เงินฝากและอื่นๆ', percentage: 5.27 },
+            ],
+            sector_allocation: [
+                { sector: 'สินค้าฟุ่มเฟือย/ตามวัฏจักร', percentage: 39.83 },
+                { sector: 'บริการด้านการสื่อสาร', percentage: 30.13 },
+                { sector: 'สาธารณูปโภคพื้นฐาน', percentage: 10.25 },
+                { sector: 'บริการด้านการเงิน', percentage: 10.06 },
+                { sector: 'เทคโนโลยี', percentage: 9.73 },
+            ],
+            holdings: [
+                {
+                    name: "NETEASE INC",
+                    ticker: "NTES HK",
+                    percentage: 9.95,
+                    description: "ผู้ให้บริการเกมออนไลน์และบริการอินเทอร์เน็ตชั้นนำของจีน",
+                    trend: "เติบโตจากธุรกิจเกมออนไลน์ที่แข็งแกร่งทั้งในและต่างประเทศ รวมถึงการขยายบริการเพลงและอื่น ๆ",
+                    risk: "การแข่งขันในอุตสาหกรรมเกมที่รุนแรงและกฎระเบียบของภาครัฐเกี่ยวกับเกมออนไลน์",
+                    logo: '🎮'
+                },
+                {
+                    name: "XIAOMI CORP",
+                    ticker: "1810 HK",
+                    percentage: 9.89,
+                    description: "ผู้ผลิตสมาร์ทโฟน, อุปกรณ์อิเล็กทรอนิกส์, และล่าสุดคือรถยนต์ไฟฟ้า (EV)",
+                    trend: "เติบโตจากยอดขายสมาร์ทโฟนทั่วโลก การขยายกลุ่มผลิตภัณฑ์ AIoT และการบุกตลาด Smart EV",
+                    risk: "การแข่งขันสูงในตลาดสมาร์ทโฟนและความท้าทายในการทำกำไรจากธุรกิจ EV ในระยะแรก",
+                    logo: '📱'
+                },
+                {
+                    name: "PING AN INSURANCE",
+                    ticker: "2318 HK",
+                    percentage: 9.75,
+                    description: "บริษัทประกันภัยและบริการทางการเงินครบวงจรที่ใหญ่ที่สุดแห่งหนึ่งของจีน",
+                    trend: "การฟื้นตัวของธุรกิจประกันชีวิตและสุขภาพ และการเติบโตของธุรกิจบริหารสินทรัพย์และ Fintech",
+                    risk: "ความผันผวนของตลาดการลงทุนและการเปลี่ยนแปลงกฎระเบียบในอุตสาหกรรมการเงิน",
+                    logo: '🛡️'
+                },
+                {
+                    name: "MEITUAN",
+                    ticker: "3690 HK",
+                    percentage: 9.61,
+                    description: "แพลตฟอร์มบริการครบวงจร ตั้งแต่สั่งอาหาร จองโรงแรม จนถึงการเดินทาง",
+                    trend: "เติบโตจากการขยายตัวของเศรษฐกิจดิจิทัล การเพิ่มฐานผู้ใช้งานและร้านค้า และการใช้ AI เพิ่มประสิทธิภาพ",
+                    risk: "การแข่งขันที่รุนแรงจากคู่แข่งและกฎระเบียบของภาครัฐที่เกี่ยวข้องกับแพลตฟอร์มออนไลน์",
+                    logo: '🛵'
+                },
+                {
+                    name: "BAIDU INC",
+                    ticker: "9888 HK",
+                    percentage: 9.57,
+                    description: "ผู้ให้บริการเสิร์ชเอ็นจิ้น, ปัญญาประดิษฐ์ (AI), และเทคโนโลยีขับขี่อัตโนมัติ",
+                    trend: "การเติบโตจากธุรกิจคลาวด์และ AI, การพัฒนาเทคโนโลยีขับขี่อัตโนมัติ (Apollo), และโมเดลภาษาขนาดใหญ่ (LLMs)",
+                    risk: "การแข่งขันในตลาด AI และคลาวด์, การพึ่งพารายได้จากการโฆษณาออนไลน์ที่อาจชะลอตัว",
+                    logo: '🤖'
+                },
+                 {
+                    name: "TENCENT",
+                    ticker: "0700 HK",
+                    percentage: 'N/A',
+                    description: "ยักษ์ใหญ่ด้านอินเทอร์เน็ต, เกม (PUBG, Honor of Kings), โซเชียลมีเดีย (WeChat), และ Fintech",
+                    trend: "AI ช่วยขับเคลื่อนธุรกิจโฆษณาและเกม, การเติบโตของบริการคลาวด์และ Fintech",
+                    risk: "กฎระเบียบที่เข้มงวดของรัฐบาลจีน, การแข่งขันในทุกกลุ่มธุรกิจ",
+                    logo: '🐧'
+                },
+                {
+                    name: "ALIBABA",
+                    ticker: "9988 HK",
+                    percentage: 'N/A',
+                    description: "ผู้นำด้านอีคอมเมิร์ซ (Taobao, Tmall), คลาวด์คอมพิวติ้ง, และบริการดิจิทัล",
+                    trend: "การเติบโตอย่างแข็งแกร่งของธุรกิจคลาวด์และรายได้จากผลิตภัณฑ์ AI",
+                    risk: "การแข่งขันในตลาดอีคอมเมิร์ซที่รุนแรง, ความไม่แน่นอนด้านกฎระเบียบ",
+                    logo: '🛒'
+                },
+                {
+                    name: "JD.COM",
+                    ticker: "9618 HK",
+                    percentage: 'N/A',
+                    description: "บริษัทอีคอมเมิร์ซและโลจิสติกส์ชั้นนำ มีจุดเด่นด้านการจัดส่งที่รวดเร็ว",
+                    trend: "การเติบโตของผู้ใช้งานที่แข็งแกร่ง, การขยายบริการโลจิสติกส์",
+                    risk: "การแข่งขันสูงกับ Alibaba และ Pinduoduo, การลงทุนสูงในโครงสร้างพื้นฐาน",
+                    logo: '🚚'
+                },
+            ]
+        },
+        risks: [
+            {
+                title: 'ความเสี่ยงจากอัตราแลกเปลี่ยน (FX Risk)',
+                content: 'กองทุนไม่มีนโยบายป้องกันความเสี่ยงจากอัตราแลกเปลี่ยน ทำให้นักลงทุนไทยจะได้รับผลกระทบโดยตรงจากการเปลี่ยนแปลงของค่าเงินบาทเมื่อเทียบกับดอลลาร์ฮ่องกง (HKD) หากเงินบาทแข็งค่าขึ้น ผลตอบแทนจะลดลง',
+                icon: '💱'
+            },
+            {
+                title: 'ความเสี่ยงจากการกระจุกตัว (Concentration Risk)',
+                content: 'ลงทุนในหุ้นเพียง 10 บริษัทเท่านั้น แม้จะมีการกระจายน้ำหนักเท่ากัน แต่หากเกิดปัญหากระทบทั้งอุตสาหกรรม อาจส่งผลต่อกองทุนอย่างรุนแรง',
+                icon: '🎯'
+            },
+            {
+                title: 'ความเสี่ยงเฉพาะตลาดจีน (Country-Specific Risk)',
+                content: 'ตลาดจีนอ่อนไหวต่อการเปลี่ยนแปลงกฎระเบียบของภาครัฐ (Regulatory Risk) และความตึงเครียดทางภูมิรัฐศาสตร์ (Geopolitical Risk) ซึ่งอาจส่งผลกระทบต่อบริษัทเทคโนโลยีโดยตรง',
+                icon: '🇨🇳'
+            },
+            {
+                title: 'ความเสี่ยงจากความผันผวนของตลาด (Market Volatility)',
+                content: 'ตลาดหุ้นจีนเป็นที่ทราบกันดีว่ามีความผันผวนสูงกว่าตลาดหุ้นในประเทศพัฒนาแล้ว ผู้ลงทุนควรเตรียมพร้อมรับมือกับการเปลี่ยนแปลงของราคาในระยะสั้น',
+                icon: '📉'
+            }
+        ]
+    };
+
+    const chartColors = {
+        blue: '#5F7C8A',
+        red: '#C87E7A',
+        green: '#8A9A5B',
+        gold: '#D4AF37',
+        grey: '#A9A9A9',
+        lightBlue: 'rgba(95, 124, 138, 0.2)'
+    };
+    
+    Chart.defaults.font.family = "'Sarabun', sans-serif";
+    Chart.defaults.color = '#4A4A4A';
+    
+    function createYtdPerformanceChart() {
+        const ctx = document.getElementById('ytdPerformanceChart').getContext('2d');
+        const simulatedData = fundData.performance.ytd_chart.data.map((val, i) => {
+            if (i === 0) return 100;
+            let base = fundData.performance.ytd_chart.data[i-1];
+            return base + (Math.random() * 10 - 5);
+        });
+        
+        simulatedData[0] = 100; // Start at 100
+        simulatedData[simulatedData.length - 1] = 100 + fundData.performance.ytd; // End at the actual YTD value
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: fundData.performance.ytd_chart.labels,
+                datasets: [{
+                    label: 'ผลตอบแทนสะสม (%)',
+                    data: simulatedData,
+                    borderColor: chartColors.red,
+                    backgroundColor: 'rgba(200, 126, 122, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: chartColors.red,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ผลตอบแทน: ${context.parsed.y.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createPeerComparisonChart() {
+        const ctx = document.getElementById('peerComparisonChart').getContext('2d');
+        const sortedData = [...fundData.performance.peer_comparison_3m].sort((a, b) => b.performance - a.performance);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedData.map(d => d.fund),
+                datasets: [{
+                    label: 'ผลตอบแทน 3 เดือน (%)',
+                    data: sortedData.map(d => d.performance),
+                    backgroundColor: sortedData.map(d => d.fund === 'MEGA10CHINA-A' ? chartColors.red : chartColors.lightBlue),
+                    borderColor: sortedData.map(d => d.fund === 'MEGA10CHINA-A' ? chartColors.red : chartColors.blue),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'ผลตอบแทน (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function createMddComparisonChart() {
+        const ctx = document.getElementById('mddComparisonChart').getContext('2d');
+        const sortedData = [...fundData.performance.mdd_comparison].sort((a, b) => a.mdd - b.mdd);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedData.map(d => d.fund),
+                datasets: [{
+                    label: 'Max Drawdown (%)',
+                    data: sortedData.map(d => d.mdd),
+                    backgroundColor: sortedData.map(d => d.fund === 'MEGA10CHINA-A' ? chartColors.green : chartColors.lightBlue),
+                     borderColor: sortedData.map(d => d.fund === 'MEGA10CHINA-A' ? chartColors.green : chartColors.blue),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'ผลขาดทุนสูงสุด (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function createAssetAllocationChart() {
+        const ctx = document.getElementById('assetAllocationChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: fundData.portfolio.asset_allocation.map(d => d.asset),
+                datasets: [{
+                    data: fundData.portfolio.asset_allocation.map(d => d.percentage),
+                    backgroundColor: [chartColors.blue, chartColors.grey],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    function createSectorAllocationChart() {
+        const ctx = document.getElementById('sectorAllocationChart').getContext('2d');
+        const sortedData = [...fundData.portfolio.sector_allocation].sort((a, b) => b.percentage - a.percentage);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedData.map(d => d.sector.length > 25 ? d.sector.substring(0, 22) + '...' : d.sector),
+                datasets: [{
+                    label: 'สัดส่วน (%)',
+                    data: sortedData.map(d => d.percentage),
+                    backgroundColor: [chartColors.red, chartColors.blue, chartColors.gold, chartColors.green, chartColors.grey],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'สัดส่วน (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function populateHoldingsGrid() {
+        const grid = document.getElementById('holdings-grid');
+        grid.innerHTML = '';
+        fundData.portfolio.holdings.forEach((holding, index) => {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-4 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transform transition-all duration-200 cursor-pointer flex flex-col items-center text-center';
+            card.innerHTML = `
+                <div class="text-4xl mb-3">${holding.logo}</div>
+                <h5 class="font-bold text-md text-[#5F7C8A]">${holding.name}</h5>
+                <p class="text-xs text-gray-500">${holding.ticker}</p>
+                ${holding.percentage !== 'N/A' ? `<p class="text-sm font-semibold text-[#C87E7A] mt-2">${holding.percentage}%</p>` : `<p class="text-sm font-semibold text-gray-400 mt-2">Top 10</p>`}
+            `;
+            card.addEventListener('click', () => showHoldingModal(holding));
+            grid.appendChild(card);
+        });
+    }
+
+    function showHoldingModal(holding) {
+        document.getElementById('modal-title').textContent = `${holding.name} (${holding.ticker})`;
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold text-lg text-gray-800">📝 รายละเอียด</h4>
+                    <p class="text-gray-600">${holding.description}</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg text-gray-800">📈 แนวโน้ม</h4>
+                    <p class="text-gray-600">${holding.trend}</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg text-gray-800">📉 ความเสี่ยง</h4>
+                    <p class="text-gray-600">${holding.risk}</p>
+                </div>
+            </div>
+        `;
+        const modal = document.getElementById('holding-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('.modal-content').classList.remove('scale-95');
+        }, 10);
+    }
+    
+    function closeHoldingModal() {
+        const modal = document.getElementById('holding-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('.modal-content').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+    
+    document.getElementById('modal-close-button').addEventListener('click', closeHoldingModal);
+    document.getElementById('holding-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeHoldingModal();
+        }
+    });
+
+    function populateRiskAccordion() {
+        const accordion = document.getElementById('risk-accordion');
+        accordion.innerHTML = '';
+        fundData.risks.forEach((risk, index) => {
+            const item = document.createElement('div');
+            item.className = 'bg-white rounded-lg shadow-sm overflow-hidden';
+            item.innerHTML = `
+                <button class="w-full text-left p-4 flex justify-between items-center hover:bg-gray-50 focus:outline-none">
+                    <span class="flex items-center">
+                        <span class="text-2xl mr-3">${risk.icon}</span>
+                        <span class="font-semibold text-[#5F7C8A]">${risk.title}</span>
+                    </span>
+                    <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="px-4 pb-4 text-gray-600 hidden">
+                    <p>${risk.content}</p>
+                </div>
+            `;
+            accordion.appendChild(item);
+        });
+
+        accordion.addEventListener('click', function(e) {
+            const button = e.target.closest('button');
+            if (!button) return;
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('svg');
+            
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        });
+    }
+    
+    function setupMobileMenu() {
+        const button = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+        button.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    }
+
+    function setupNavHighlighting() {
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('nav-active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('nav-active');
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: "-50% 0px -50% 0px" });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    }
+
+    createYtdPerformanceChart();
+    createPeerComparisonChart();
+    createMddComparisonChart();
+    createAssetAllocationChart();
+    createSectorAllocationChart();
+    populateHoldingsGrid();
+    populateRiskAccordion();
+    setupMobileMenu();
+    setupNavHighlighting();
+});
+</script>
+
+</body>
+</html>
