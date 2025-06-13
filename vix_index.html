@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIX Index: Interactive Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f5f5f4; /* Warm Neutral: Stone 100 */
+        }
+        .text-primary { color: #1e293b; } /* Slate 800 */
+        .text-secondary { color: #475569; } /* Slate 600 */
+        .bg-card { background-color: #ffffff; }
+        .accent-color { color: #4338ca; } /* Indigo 700 */
+        .accent-bg { background-color: #4338ca; }
+        .border-accent { border-color: #c7d2fe; } /* Indigo 200 */
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 350px;
+            width: 100%;
+            max-height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            border-bottom-color: #4338ca;
+            color: #4338ca;
+            font-weight: 600;
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="text-primary">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-bold text-primary">VIX Index</h1>
+            <p class="text-xl md:text-2xl text-secondary mt-2">เครื่องมือวัด "ความกลัว" ของตลาด แบบอินเทอร์แอคทีฟ</p>
+        </header>
+
+        <main class="space-y-12">
+
+            <section id="core-concepts" class="bg-card p-6 rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-center">แนวคิดหลักของ VIX</h2>
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
+                        <button class="tab-button active py-4 px-1 text-lg" data-tab="what-is-vix">VIX คืออะไร?</button>
+                        <button class="tab-button py-4 px-1 text-lg" data-tab="how-calculated">คำนวณอย่างไร?</button>
+                        <button class="tab-button py-4 px-1 text-lg" data-tab="how-interpret">ตีความอย่างไร?</button>
+                    </nav>
+                </div>
+
+                <div id="tab-content">
+                    <div class="tab-pane active" id="pane-what-is-vix">
+                        <p class="text-lg text-secondary mb-4">ดัชนี VIX (Volatility Index) คือมาตรวัดความคาดหวังของตลาดเกี่ยวกับความผันผวนในระยะสั้น (30 วันข้างหน้า) ของดัชนี S&P 500 ไม่ได้วัดสิ่งที่เกิดขึ้นแล้ว แต่มองไปข้างหน้า จึงถูกขนานนามว่าเป็น "ดัชนีความกลัว" (Fear Gauge)</p>
+                        <p class="text-lg text-secondary">เมื่อ VIX สูงขึ้น สะท้อนว่านักลงทุนกังวลและเข้าซื้อ Put Options เพื่อป้องกันความเสี่ยง ส่งผลให้ VIX กลายเป็นเครื่องมือสำคัญในการประเมินอารมณ์และความเสี่ยงของตลาด</p>
+                    </div>
+                    <div class="tab-pane hidden" id="pane-how-calculated">
+                         <div class="flex flex-col md:flex-row justify-around items-center text-center p-4 space-y-4 md:space-y-0">
+                            <div class="flex flex-col items-center">
+                                <span class="text-4xl">📄</span>
+                                <h3 class="font-semibold mt-2">รวบรวมราคา Options</h3>
+                                <p class="text-secondary text-sm">ใช้ราคา Bid/Ask ของ<br>S&P 500 Call & Put Options</p>
+                            </div>
+                            <div class="text-4xl accent-color transform rotate-90 md:rotate-0">→</div>
+                             <div class="flex flex-col items-center">
+                                <span class="text-4xl">⚖️</span>
+                                <h3 class="font-semibold mt-2">หาค่าเฉลี่ย Implied Volatility</h3>
+                                <p class="text-secondary text-sm">ให้น้ำหนักกับ Options ที่มีอายุ<br>ในช่วง 23-37 วัน</p>
+                            </div>
+                             <div class="text-4xl accent-color transform rotate-90 md:rotate-0">→</div>
+                            <div class="flex flex-col items-center">
+                                 <span class="text-4xl">📈</span>
+                                <h3 class="font-semibold mt-2">คำนวณค่าคาดการณ์ 30 วัน</h3>
+                                <p class="text-secondary text-sm">แสดงผลเป็นเปอร์เซ็นต์ต่อปี<br>ที่สะท้อนการเคลื่อนไหวของ S&P 500</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane hidden" id="pane-how-interpret">
+                        <div class="chart-container">
+                            <canvas id="interpretChart"></canvas>
+                        </div>
+                         <p class="text-center mt-4 text-secondary">VIX ระดับต่างๆ บ่งชี้สภาวะอารมณ์ของตลาดที่แตกต่างกัน ตั้งแต่ผ่อนคลายไปจนถึงตื่นตระหนก</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="vix-vs-spx" class="bg-card p-6 rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-2 text-center">VIX vs. S&P 500: ความสัมพันธ์แบบตรงข้าม</h2>
+                <p class="text-lg text-secondary mb-6 text-center">ลักษณะเด่นที่สุดของ VIX คือการเคลื่อนไหวสวนทางกับดัชนี S&P 500 อย่างชัดเจน ซึ่งมีค่าสหสัมพันธ์เฉลี่ยประมาณ -81% ในช่วง 10 ปีที่ผ่านมา</p>
+                <div class="chart-container">
+                    <canvas id="correlationChart"></canvas>
+                </div>
+            </section>
+            
+            <section id="toolkit">
+                <h2 class="text-3xl font-bold mb-6 text-center">กลยุทธ์สำหรับนักลงทุน</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-card p-6 rounded-xl shadow-md text-center">
+                        <span class="text-5xl">🛡️</span>
+                        <h3 class="text-xl font-semibold mt-4 mb-2">ป้องกันความเสี่ยง (Hedging)</h3>
+                        <p class="text-secondary">ใช้ผลิตภัณฑ์ VIX ชดเชยผลขาดทุนของพอร์ตเมื่อตลาดผันผวนสูงขึ้น</p>
+                    </div>
+                     <div class="bg-card p-6 rounded-xl shadow-md text-center">
+                        <span class="text-5xl">💹</span>
+                        <h3 class="text-xl font-semibold mt-4 mb-2">เก็งกำไร (Speculation)</h3>
+                        <p class="text-secondary">ทำกำไรจากการคาดการณ์ทิศทางของ "ความผันผวน" โดยตรง</p>
+                    </div>
+                     <div class="bg-card p-6 rounded-xl shadow-md text-center">
+                        <span class="text-5xl">⚖️</span>
+                        <h3 class="text-xl font-semibold mt-4 mb-2">ปรับสมดุลพอร์ต (Rebalancing)</h3>
+                        <p class="text-secondary">ใช้ VIX เป็นสัญญาณเข้าซื้อเมื่อตลาดกลัว (VIX สูง) หรือขายเมื่อตลาดโลภ (VIX ต่ำ)</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="advanced-topics">
+                 <h2 class="text-3xl font-bold mb-6 text-center">แนวคิดขั้นสูงและเครื่องมือ</h2>
+                 <div class="space-y-4">
+                     <div class="bg-card rounded-xl shadow-md">
+                         <button class="accordion-header w-full p-6 text-left text-xl font-semibold flex justify-between items-center">
+                             <span>VIX Futures: Contango & Backwardation</span>
+                             <span class="transform transition-transform duration-300">▼</span>
+                         </button>
+                         <div class="accordion-content px-6 pb-6">
+                            <p class="text-secondary mb-4">โครงสร้างราคาของ VIX Futures บอกสภาวะตลาดได้: <strong>Contango</strong> คือภาวะปกติที่ตลาดผ่อนคลาย ส่วน <strong>Backwardation</strong> คือภาวะตื่นตระหนก</p>
+                            <div class="text-center mb-4">
+                                <button id="term-toggle-btn" class="accent-bg text-white font-bold py-2 px-4 rounded-lg">สลับเป็น Backwardation</button>
+                            </div>
+                             <div class="chart-container">
+                                 <canvas id="termStructureChart"></canvas>
+                             </div>
+                         </div>
+                     </div>
+                      <div class="bg-card rounded-xl shadow-md">
+                         <button class="accordion-header w-full p-6 text-left text-xl font-semibold flex justify-between items-center">
+                             <span>VVIX: ความผันผวนของความผันผวน</span>
+                              <span class="transform transition-transform duration-300">▼</span>
+                         </button>
+                         <div class="accordion-content px-6 pb-6">
+                             <p class="text-secondary">ดัชนี VVIX วัดความคาดหวังความผันผวนของตัว VIX เอง หาก VIX คือ "ความเร็วของความกลัว" VVIX ก็คือ "อัตราเร่งของความกลัว" ซึ่งบ่งชี้ความไม่แน่นอนเกี่ยวกับระดับความกลัวในอนาคต</p>
+                         </div>
+                     </div>
+                      <div class="bg-card rounded-xl shadow-md">
+                         <button class="accordion-header w-full p-6 text-left text-xl font-semibold flex justify-between items-center">
+                             <span>เครื่องมือการลงทุน</span>
+                              <span class="transform transition-transform duration-300">▼</span>
+                         </button>
+                         <div class="accordion-content px-6 pb-6 overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b-2 border-primary">
+                                        <th class="p-2">เครื่องมือ</th><th class="p-2">ข้อดี</th><th class="p-2">ความเสี่ยงหลัก</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="p-2 font-semibold">Futures</td><td class="p-2">Leverage สูง</td><td class="p-2">Roll Yield, Margin</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="p-2 font-semibold">Options</td><td class="p-2">ยืดหยุ่น, จำกัดขาดทุน</td><td class="p-2">Time Decay, ซับซ้อน</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 font-semibold">ETFs/ETNs</td><td class="p-2">เข้าถึงง่าย</td><td class="p-2">Contango bleed, Tracking error</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                         </div>
+                     </div>
+                 </div>
+            </section>
+            
+            <section id="modern-vix" class="bg-card p-6 rounded-2xl shadow-lg">
+                 <h2 class="text-3xl font-bold mb-6 text-center">VIX ในยุคปัจจุบัน: "เสีย" แล้วหรือยัง?</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                     <div>
+                         <h3 class="font-semibold text-xl mb-2 accent-color">ปัจจัยโครงสร้างใหม่</h3>
+                         <p class="text-secondary mb-4">การเติบโตของ <strong>0DTE Options</strong> (หมดอายุในวันเดียว) และ <strong>Option-Selling ETFs</strong> อาจเป็นสาเหตุที่ทำให้ VIX มีแนวโน้มอยู่ในระดับต่ำและตอบสนองต่อความผันผวนน้อยลงกว่าในอดีต</p>
+                         <p class="text-secondary">พฤติกรรมของ VIX อาจไม่ได้ "เสีย" แต่ "ลักษณะนิสัย" ได้เปลี่ยนไปตามภูมิทัศน์ของตลาดที่เปลี่ยนไป ทำให้นักลงทุนต้องปรับตัวในการตีความ</p>
+                     </div>
+                     <div class="chart-container h-64 md:h-auto">
+                         <canvas id="odteChart"></canvas>
+                         <p class="text-center text-sm text-secondary mt-2">0DTE Options คิดเป็นสัดส่วนปริมาณซื้อขายถึงราว 50%</p>
+                     </div>
+                 </div>
+            </section>
+            
+            <section id="takeaways">
+                <h2 class="text-3xl font-bold mb-6 text-center">ประเด็นสำคัญที่ต้องจำ</h2>
+                 <ul class="list-none space-y-4 text-lg max-w-3xl mx-auto">
+                    <li class="flex items-start"><span class="accent-color font-bold text-2xl mr-3">&#8227;</span><span class="text-secondary">VIX เป็นเครื่องมือวัด <strong>"ความคาดหวัง"</strong> ไม่ใช่ตัวพยากรณ์ที่สมบูรณ์แบบ</span></li>
+                    <li class="flex items-start"><span class="accent-color font-bold text-2xl mr-3">&#8227;</span><span class="text-secondary">ทำความเข้าใจผลิตภัณฑ์ที่ใช้ลงทุนให้ดี โดยเฉพาะความเสี่ยงจาก <strong>Contango</strong> และ <strong>Time Decay</strong></span></li>
+                    <li class="flex items-start"><span class="accent-color font-bold text-2xl mr-3">&#8227;</span><span class="text-secondary">พฤติกรรมของ VIX กำลังเปลี่ยนแปลง นักลงทุนต้องปรับตัวในการตีความและไม่ยึดติดกับข้อมูลในอดีตเพียงอย่างเดียว</span></li>
+                    <li class="flex items-start"><span class="accent-color font-bold text-2xl mr-3">&#8227;</span><span class="text-secondary">ใช้ VIX <strong>ร่วมกับ</strong>เครื่องมือวิเคราะห์อื่นๆ เพื่อประกอบการตัดสินใจเสมอ</span></li>
+                </ul>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>Interactive dashboard created based on the VIX Index source report.</p>
+            <p>Designed and developed by Gemini.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartColors = {
+                primary: '#1e293b',
+                secondary: '#475569',
+                accent: '#4338ca',
+                low: 'rgba(52, 211, 153, 0.7)', // Emerald 400
+                medium: 'rgba(251, 191, 36, 0.7)', // Amber 400
+                high: 'rgba(239, 68, 68, 0.7)', // Red 500
+                contango: '#f97316', // Orange 500
+                backwardation: '#8b5cf6' // Violet 500
+            };
+
+            const fontConfig = {
+                font: {
+                    family: "'Sarabun', sans-serif"
+                }
+            };
+            
+            const tooltipConfig = {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                return Array.isArray(label) ? label.join(' ') : label;
+                            }
+                        },
+                        bodyFont: fontConfig.font,
+                        titleFont: fontConfig.font
+                    },
+                    legend: {
+                        labels: fontConfig
+                    }
+                }
+            };
+
+            const interpretCtx = document.getElementById('interpretChart');
+            if(interpretCtx) {
+                new Chart(interpretCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['ต่ำ (< 20)', 'ปานกลาง (20-30)', 'สูง (> 30)'],
+                        datasets: [{
+                            label: 'ระดับความรู้สึกตลาด',
+                            data: [1, 2, 3],
+                            backgroundColor: [chartColors.low, chartColors.medium, chartColors.high],
+                            borderWidth: 0,
+                            barPercentage: 0.8,
+                            categoryPercentage: 0.6
+                        }]
+                    },
+                    options: {
+                        ...tooltipConfig,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { display: false, beginAtZero: true },
+                            y: { grid: { display: false }, ticks: {...fontConfig, font: {...fontConfig.font, size: 14}} }
+                        },
+                        plugins: {
+                            ...tooltipConfig.plugins,
+                            legend: { display: false },
+                            title: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            const correlationCtx = document.getElementById('correlationChart');
+            if(correlationCtx) {
+                const scatterData = Array.from({length: 100}, () => {
+                    const spChange = (Math.random() - 0.45) * 4;
+                    const noise = (Math.random() - 0.5) * 10;
+                    const vixChange = (spChange * -10 * 0.81) + noise * (1 - 0.81);
+                    return { x: spChange, y: vixChange };
+                });
+                new Chart(correlationCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'S&P 500 vs VIX',
+                            data: scatterData,
+                            backgroundColor: 'rgba(71, 85, 105, 0.6)',
+                        }]
+                    },
+                    options: {
+                        ...tooltipConfig,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: { display: true, text: 'S&P 500 % Change', ...fontConfig },
+                                ticks: { ...fontConfig }
+                            },
+                            y: {
+                                title: { display: true, text: 'VIX Point Change', ...fontConfig },
+                                ticks: { ...fontConfig }
+                            }
+                        },
+                        plugins: {
+                            ...tooltipConfig.plugins,
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+            
+            const odteCtx = document.getElementById('odteChart');
+            if(odteCtx) {
+                new Chart(odteCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['0DTE Options', 'Options อายุอื่นๆ'],
+                        datasets: [{
+                            data: [50, 50],
+                            backgroundColor: [chartColors.accent, chartColors.secondary],
+                            borderColor: '#ffffff',
+                            borderWidth: 4,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        ...tooltipConfig,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                             ...tooltipConfig.plugins,
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            const termStructureCtx = document.getElementById('termStructureChart');
+            let termStructureChart;
+            if(termStructureCtx){
+                const termData = {
+                    labels: ['Spot', 'เดือนที่ 1', 'เดือนที่ 2', 'เดือนที่ 3'],
+                    contango: {
+                        data: [15, 17, 18, 19],
+                        color: chartColors.contango,
+                        label: 'Contango (ภาวะปกติ)',
+                    },
+                    backwardation: {
+                        data: [35, 31, 29, 28],
+                        color: chartColors.backwardation,
+                        label: 'Backwardation (ภาวะวิกฤต)',
+                    }
+                };
+                
+                termStructureChart = new Chart(termStructureCtx, {
+                    type: 'line',
+                    data: {
+                        labels: termData.labels,
+                        datasets: [{
+                            label: termData.contango.label,
+                            data: termData.contango.data,
+                            borderColor: termData.contango.color,
+                            backgroundColor: termData.contango.color.replace(')', ', 0.2)'),
+                            tension: 0.2,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        ...tooltipConfig,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                         scales: {
+                            y: {
+                                title: { display: true, text: 'VIX Futures Price', ...fontConfig },
+                                ticks: { ...fontConfig }
+                            },
+                            x: {
+                                ticks: { ...fontConfig }
+                            }
+                        },
+                         plugins: {
+                            ...tooltipConfig.plugins,
+                            legend: {
+                                position: 'top',
+                                labels: fontConfig
+                            }
+                        }
+                    }
+                });
+
+                const toggleBtn = document.getElementById('term-toggle-btn');
+                let isContango = true;
+                toggleBtn.addEventListener('click', () => {
+                    isContango = !isContango;
+                    const currentMode = isContango ? 'contango' : 'backwardation';
+                    const nextMode = isContango ? 'backwardation' : 'contango';
+                    
+                    termStructureChart.data.datasets[0].data = termData[currentMode].data;
+                    termStructureChart.data.datasets[0].label = termData[currentMode].label;
+                    termStructureChart.data.datasets[0].borderColor = termData[currentMode].color;
+                    termStructureChart.data.datasets[0].backgroundColor = termData[currentMode].color.replace(')', ', 0.2)');
+                    termStructureChart.update();
+                    
+                    toggleBtn.textContent = `สลับเป็น ${termData[nextMode].label.split(' ')[0]}`;
+                });
+            }
+
+            const tabs = document.querySelectorAll('.tab-button');
+            const panes = document.querySelectorAll('.tab-pane');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const targetPaneId = 'pane-' + tab.dataset.tab;
+                    panes.forEach(pane => {
+                        if(pane.id === targetPaneId) {
+                            pane.classList.remove('hidden');
+                        } else {
+                            pane.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const accordions = document.querySelectorAll('.accordion-header');
+            accordions.forEach(accordion => {
+                accordion.addEventListener('click', () => {
+                    const content = accordion.nextElementSibling;
+                    const icon = accordion.querySelector('span:last-child');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(acc => {
+                            acc.style.maxHeight = null;
+                            acc.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                        });
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    } 
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
